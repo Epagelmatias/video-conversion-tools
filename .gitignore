@@ -131,3 +131,9 @@ dist
 
 *.mp4
 *.mkv
+
+test-vids/
+
+/filelist.txt
+package-lock.json
+/test.js

@@ -13,8 +13,8 @@ ffmpeg.setFfmpegPath(ffmpegStatic);
 const program = new commander.Command();
 
 program
-  .option("-sg, --segs <value>", "Number of segments", 10)
-  .option("-sc, --secs <value>", "Duration of each segment in seconds", 10)
+  .option("-sg, --segs <value>", "Number of segments", 20)
+  .option("-sc, --secs <value>", "Duration of each segment in seconds", 6)
   .parse(process.argv);
 
 const options = program.opts();
