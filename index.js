@@ -13,7 +13,7 @@ ffmpeg.setFfmpegPath(ffmpegStatic);
 const program = new commander.Command();
 
 program
-  .option("-sg, --segs <value>", "Number of segments", 20)
+  .option("-sg, --segs <value>", "Number of segments", 15)
   .option("-sc, --secs <value>", "Duration of each segment in seconds", 6)
   .parse(process.argv);
 
@@ -44,25 +44,26 @@ const createSegmentCommand = (startOffset, duration, outputPath) => {
 };
 
 // Function to get video duration using ffprobe
-const getVideoDuration = async () => {
-  try {
-    const metadata = await ffprobe(inputFilePath);
-    return metadata.format.duration;
-  } catch (error) {
-    throw new Error(`Error getting video metadata: ${error}`);
-  }
-};
 
 // Main function using async/await
 const main = async () => {
   try {
-    const videoDuration = await getVideoDuration();
+    const metadata = await ffprobe(inputFilePath)
+    const videoDuration = Math.floor(metadata.format.duration)
 
     let starts = [];
     let inputFiles = [];
 
     for (let i = 1; i < segmentsNum; i++) {
-      starts.push(Math.floor((i / segmentsNum) * Math.floor(videoDuration)));
+      let start
+      if(i==1){
+        start = 60
+      }else if (i == segmentsNum-1){
+        start = videoDuration - 60
+      }else{
+        start = Math.floor((i / segmentsNum) * videoDuration);
+      }
+        starts.push(start);
     }
 
     for (const start of starts) {
@@ -91,6 +92,9 @@ const main = async () => {
     };
 
     await createCustomCommand(fileListPath, outputFilePath);
+
+    // const metadata2 = await ffprobe("h 24.mp4");
+    // console.log("output meta", metadata2.format);
 
     // Create a command to concatenate videos
     // const command = `ffmpeg -y -f concat -safe 0 -i "${fileListPath}" -c copy "${outputFilePath}"`;
