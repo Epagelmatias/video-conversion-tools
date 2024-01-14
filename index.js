@@ -13,7 +13,7 @@ ffmpeg.setFfmpegPath(ffmpegStatic);
 const program = new commander.Command();
 
 program
-  .option("-sg, --segs <value>", "Number of segments", 15)
+  .option("-sg, --segs <value>", "Number of segments", 10)
   .option("-sc, --secs <value>", "Duration of each segment in seconds", 6)
   .parse(process.argv);
 
@@ -22,7 +22,7 @@ const options = program.opts();
 console.log("Options:", options);
 
 // Input and output file paths
-const inputFilePath = "input.mp4";
+const inputFilePath = "X:\\Ahem\\Engel\\Asorted\\8836_02_720p.mp4";
 const outputFilePath = "output.mp4";
 
 const segmentsNum = parseInt(options.segs)+1
@@ -56,13 +56,13 @@ const main = async () => {
 
     for (let i = 1; i < segmentsNum; i++) {
       let start
-      if(i==1){
-        start = 60
-      }else if (i == segmentsNum-1){
-        start = videoDuration - 60
-      }else{
+      // if(i==1){
+      //   start = 60
+      // }else if (i == segmentsNum-1){
+      //   start = videoDuration - 60
+      // }else{
         start = Math.floor((i / segmentsNum) * videoDuration);
-      }
+      // }
         starts.push(start);
     }
 
