@@ -107,7 +107,7 @@ const main = async (path) => {
     console.log("Temporary files deleted.");
     console.log("Videos merged successfully.");
   
-};
+}
 
 const paths = ["input.mp4"]
 for (const path of paths) {
@@ -117,5 +117,3 @@ for (const path of paths) {
     console.error("Error:", error.message);
   }
 }
-
-
