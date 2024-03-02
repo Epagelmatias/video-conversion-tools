@@ -13,25 +13,23 @@ ffmpeg.setFfmpegPath(ffmpegStatic);
 const program = new commander.Command();
 
 program
-  .option("-sg, --segs <value>", "Number of segments", 10)
-  .option("-sc, --secs <value>", "Duration of each segment in seconds", 6)
+  .option("-sg, --segs <value>", "Number of segments", 9)
+  .option("-sc, --secs <value>", "Duration of each segment in seconds", 5)
   .parse(process.argv);
 
 const options = program.opts();
 
 console.log("Options:", options);
 
-// Input and output file paths
-const inputFilePath = "X:\\Ahem\\Engel\\Asorted\\8836_02_720p.mp4";
 const outputFilePath = "output.mp4";
 
 const segmentsNum = parseInt(options.segs)+1
 const segmentsSec = parseInt(options.secs)
 
 // Function to create command for segment extraction
-const createSegmentCommand = (startOffset, duration, outputPath) => {
+const createSegment = (startOffset, duration, outputPath, path) => {
   return new Promise((resolve, reject) => {
-    ffmpeg(inputFilePath)
+    ffmpeg(path)
       .setStartTime(startOffset)
       .duration(duration)
       .output(outputPath)
@@ -46,9 +44,8 @@ const createSegmentCommand = (startOffset, duration, outputPath) => {
 // Function to get video duration using ffprobe
 
 // Main function using async/await
-const main = async () => {
-  try {
-    const metadata = await ffprobe(inputFilePath)
+const main = async (path) => {
+    const metadata = await ffprobe(path)
     const videoDuration = Math.floor(metadata.format.duration)
 
     let starts = [];
@@ -68,7 +65,7 @@ const main = async () => {
 
     for (const start of starts) {
       const fileName = start + ".mp4";
-      await createSegmentCommand(start, segmentsSec, fileName);
+      await createSegment(start, segmentsSec, fileName, path);
       inputFiles.push(fileName);
     }
     
@@ -84,7 +81,7 @@ const main = async () => {
           .inputFormat("concat")
           .inputOptions(["-safe 0"])
           .output(outputFilePath)
-          .outputOptions(["-c copy"])
+          .outputOptions(["-c copy", "-fps_mode cfr"])
           .on("end", resolve)
           .on("error", reject)
           .run();
@@ -109,10 +106,16 @@ const main = async () => {
 
     console.log("Temporary files deleted.");
     console.log("Videos merged successfully.");
+  
+};
+
+const paths = ["input.mp4"]
+for (const path of paths) {
+  try{
+  main(path);
   } catch (error) {
     console.error("Error:", error.message);
   }
-};
+}
 
-// Run the main function
-main();
+
